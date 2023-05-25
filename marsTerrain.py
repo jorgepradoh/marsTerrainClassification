@@ -114,7 +114,7 @@ for allmodels in model:
 
 resNetModel.fc = nn.Sequential(OrderedDict([ 
     ('Linear',nn.Linear(2048,NUM_CLASSES, bias=True)),
-    #('Output',nn.LogSoftmax()) 
+    ('Output',nn.LogSoftmax()) 
 ])) 
 
 mobileNet.classifier[1] = nn.Sequential(OrderedDict([
@@ -153,22 +153,24 @@ effNet.classifier[1] = nn.Sequential(OrderedDict([
 ]))
 
 # %% Optimizers, loss function and losses
+# Learning rate
+lr = 0.001
 
-opt1 = optim.SGD(resNetModel.fc.parameters())
-opt2 = optim.SGD(mobileNet.classifier[1].parameters())
-opt3 = optim.SGD(AlexNet.classifier[6].parameters())
-opt4 = optim.SGD(denseNetModel.classifier.parameters())
-opt5 = optim.SGD(ViTmodel.heads.parameters())
-opt6 = optim.SGD(swinModel.head.parameters())
-opt7 = optim.SGD(convnext.classifier[2].parameters())
-opt8 = optim.SGD(maxvit.classifier[5].parameters())
-opt9 = optim.SGD(effNet.classifier[1].parameters())
-
-
+opt1 = optim.SGD(resNetModel.fc.parameters(), lr=lr)
+opt2 = optim.SGD(mobileNet.classifier[1].parameters(), lr=lr)
+opt3 = optim.SGD(AlexNet.classifier[6].parameters(), lr=lr)
+opt4 = optim.SGD(denseNetModel.classifier.parameters(), lr=lr)
+opt5 = optim.SGD(ViTmodel.heads.parameters(), lr=lr)
+opt6 = optim.SGD(swinModel.head.parameters(), lr=lr)
+opt7 = optim.SGD(convnext.classifier[2].parameters(), lr=lr)
+opt8 = optim.SGD(maxvit.classifier[5].parameters(), lr=lr)
+opt9 = optim.SGD(effNet.classifier[1].parameters(), lr=lr)
 
 loss_function = nn.CrossEntropyLoss()
 
 resNet_losses=[]
+mobileNet_losses=[]
+AlexNet_losses=[]
 denseNet_losses=[]
 ViT_losses=[]
 swin_losses=[]
@@ -176,8 +178,9 @@ convnext_losses=[]
 maxvit_losses=[]
 effNet_losses=[]
 
-
 resNetModel.train()
+mobileNet.train()
+AlexNet.train()
 denseNetModel.train()
 ViTmodel.train()
 swinModel.train()
@@ -202,16 +205,41 @@ for epoch in range(NUM_EPOCHS):
     print(f'ResNet, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
 
 loss.clear()
+# train MobileNet
+for epoch in range(NUM_EPOCHS):
+    for i, data in enumerate(trainloader, 0):
+        inputs, labels = data
+        opt2.zero_grad()
+        outputs = mobileNet(inputs)
+        loss = loss_function(outputs,labels.long())
+        loss.backward()
+        opt2.step()
+    mobileNet_losses.append(float(loss.data.detach().numpy()))
+    #if (epoch % 10 == 0):
+    print(f'MobileNet, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
 
+# train AlexNet
+for epoch in range(NUM_EPOCHS):
+    for i, data in enumerate(trainloader, 0):
+        inputs, labels = data
+        opt3.zero_grad()
+        outputs = AlexNet(inputs)
+        loss = loss_function(outputs,labels.long())
+        loss.backward()
+        opt3.step()
+    AlexNet_losses.append(float(loss.data.detach().numpy()))
+    #if (epoch % 10 == 0):
+    print(f'AlexNet, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
+    
 # train denseNet
 for epoch in range(NUM_EPOCHS):
     for i, data in enumerate(trainloader, 0):
         inputs, labels = data
-        opt2.zero_grad() 
+        opt4.zero_grad() 
         outputs = denseNetModel(inputs)
         loss = loss_function(outputs,labels)
         loss.backward()
-        opt2.step()
+        opt4.step()
     denseNet_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'DenseNet, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
@@ -222,14 +250,11 @@ loss.clear()
 for epoch in range(NUM_EPOCHS):
     for i, data in enumerate(trainloader, 0):
         inputs, labels = data
-
-        opt3.zero_grad()
-
+        opt5.zero_grad()
         outputs = ViTmodel(inputs)
-
         loss = loss_function(outputs,labels)
         loss.backward()
-        opt3.step()
+        opt5.step()
     ViT_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'ViT, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
@@ -240,14 +265,11 @@ loss.clear()
 for epoch in range(NUM_EPOCHS):
     for i, data in enumerate(trainloader, 0):
         inputs, labels = data
-
-        opt4.zero_grad()
-
+        opt6.zero_grad()
         outputs = swinModel(inputs)
-
         loss = loss_function(outputs,labels)
         loss.backward()
-        opt4.step()
+        opt6.step()
     swin_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'Swin, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
@@ -258,14 +280,11 @@ loss.clear()
 for epoch in range(NUM_EPOCHS):
     for i, data in enumerate(trainloader, 0):
         inputs, labels = data
-
-        opt5.zero_grad()
-
+        opt7.zero_grad()
         outputs = convnext(inputs)
-
         loss = loss_function(outputs,labels)
         loss.backward()
-        opt5.step()
+        opt7.step()
     convnext_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'ConvNeXt, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
@@ -276,14 +295,11 @@ loss.clear()
 for epoch in range(NUM_EPOCHS):
     for i, data in enumerate(trainloader, 0):
         inputs, labels = data
-
-        opt6.zero_grad()
-
+        opt8.zero_grad()
         outputs = maxvit(inputs)
-
         loss = loss_function(outputs,labels)
         loss.backward()
-        opt6.step()
+        opt8.step()
     maxvit_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'MaxVIT, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
@@ -294,14 +310,11 @@ loss.clear()
 for epoch in range(NUM_EPOCHS):
     for i, data in enumerate(trainloader, 0):
         inputs, labels = data
-
-        opt7.zero_grad()
-
+        opt9.zero_grad()
         outputs = effNet(inputs)
-
         loss = loss_function(outputs,labels)
         loss.backward()
-        opt7.step()
+        opt9.step()
     effNet_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'Efficient Net v2, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
