@@ -32,7 +32,7 @@ transforms = TF.Compose([
 ])
 
 # Setup datasets & dataloaders 
-batchSize = 16
+batchSize = 8
 
 # For the train/test splits we previously separate our data into a 70-30 % split
 trainset = torchvision.datasets.ImageFolder(TrainData, transforms)
