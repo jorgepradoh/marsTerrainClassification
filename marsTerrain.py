@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
 import pandas as pd
 
 #%% Setup Data variables
@@ -33,6 +34,7 @@ transforms = TF.Compose([
 # Setup datasets & dataloaders 
 batchSize = 16
 
+# For the train/test splits we previously separate our data into a 70-30 % split
 trainset = torchvision.datasets.ImageFolder(TrainData, transforms)
 trainloader = DataLoader(trainset, batch_size=batchSize, shuffle=True)
 
@@ -114,7 +116,7 @@ for allmodels in model:
 
 resNetModel.fc = nn.Sequential(OrderedDict([ 
     ('Linear',nn.Linear(2048,NUM_CLASSES, bias=True)),
-    ('Output',nn.LogSoftmax()) 
+    #('Output',nn.LogSoftmax()) 
 ])) 
 
 mobileNet.classifier[1] = nn.Sequential(OrderedDict([
@@ -169,14 +171,31 @@ opt9 = optim.SGD(effNet.classifier[1].parameters(), lr=lr)
 loss_function = nn.CrossEntropyLoss()
 
 resNet_losses=[]
+resNet_l_mD=[]
+
 mobileNet_losses=[]
+mobileNet_l_mD=[]
+
 AlexNet_losses=[]
+AlexNet_l_mD=[]
+
 denseNet_losses=[]
+denseNet_l_mD=[]
+
 ViT_losses=[]
+ViT_l_mD=[]
+
 swin_losses=[]
+swin_l_mD=[]
+
 convnext_losses=[]
+convnext_l_mD=[]
+
 maxvit_losses=[]
+maxvit_l_mD=[]
+
 effNet_losses=[]
+effNet_l_mD=[]
 
 resNetModel.train()
 mobileNet.train()
@@ -189,7 +208,7 @@ maxvit.train()
 effNet.train()
 
 #%% Train models
-NUM_EPOCHS = 5 #20
+NUM_EPOCHS = 20
 
 # train resnet
 for epoch in range(NUM_EPOCHS):
@@ -200,11 +219,13 @@ for epoch in range(NUM_EPOCHS):
         loss = loss_function(outputs,labels.long())
         loss.backward()
         opt1.step()
+        resNet_l_mD.append(float(loss.data.detach().numpy()))
     resNet_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'ResNet, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
 
-loss.clear()
+del loss
+
 # train MobileNet
 for epoch in range(NUM_EPOCHS):
     for i, data in enumerate(trainloader, 0):
@@ -214,9 +235,12 @@ for epoch in range(NUM_EPOCHS):
         loss = loss_function(outputs,labels.long())
         loss.backward()
         opt2.step()
+        mobileNet_l_mD.append(float(loss.data.detach().numpy()))
     mobileNet_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'MobileNet, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
+
+del loss
 
 # train AlexNet
 for epoch in range(NUM_EPOCHS):
@@ -227,10 +251,13 @@ for epoch in range(NUM_EPOCHS):
         loss = loss_function(outputs,labels.long())
         loss.backward()
         opt3.step()
+        AlexNet_l_mD.append(float(loss.data.detach().numpy()))
     AlexNet_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'AlexNet, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
     
+del loss
+
 # train denseNet
 for epoch in range(NUM_EPOCHS):
     for i, data in enumerate(trainloader, 0):
@@ -240,11 +267,12 @@ for epoch in range(NUM_EPOCHS):
         loss = loss_function(outputs,labels)
         loss.backward()
         opt4.step()
+        denseNet_l_mD.append(float(loss.data.detach().numpy()))
     denseNet_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'DenseNet, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
 
-loss.clear()
+del loss
 
 # train ViT
 for epoch in range(NUM_EPOCHS):
@@ -255,11 +283,12 @@ for epoch in range(NUM_EPOCHS):
         loss = loss_function(outputs,labels)
         loss.backward()
         opt5.step()
+        ViT_l_mD.append(float(loss.data.detach().numpy()))
     ViT_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'ViT, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
 
-loss.clear()
+del loss
 
 # train swin
 for epoch in range(NUM_EPOCHS):
@@ -270,11 +299,12 @@ for epoch in range(NUM_EPOCHS):
         loss = loss_function(outputs,labels)
         loss.backward()
         opt6.step()
+        swin_l_mD.append(float(loss.data.detach().numpy()))
     swin_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'Swin, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
 
-loss.clear()
+del loss
 
 # train convnext
 for epoch in range(NUM_EPOCHS):
@@ -285,11 +315,12 @@ for epoch in range(NUM_EPOCHS):
         loss = loss_function(outputs,labels)
         loss.backward()
         opt7.step()
+        convnext_l_mD.append(float(loss.data.detach().numpy()))
     convnext_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'ConvNeXt, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
 
-loss.clear()
+del loss
 
 # train maxvit
 for epoch in range(NUM_EPOCHS):
@@ -300,11 +331,12 @@ for epoch in range(NUM_EPOCHS):
         loss = loss_function(outputs,labels)
         loss.backward()
         opt8.step()
+        maxvit_l_mD.append(float(loss.data.detach().numpy()))
     maxvit_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'MaxVIT, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
 
-loss.clear()
+del loss
 
 # train effnet
 for epoch in range(NUM_EPOCHS):
@@ -315,8 +347,21 @@ for epoch in range(NUM_EPOCHS):
         loss = loss_function(outputs,labels)
         loss.backward()
         opt9.step()
+        effNet_l_mD.append(float(loss.data.detach().numpy()))
     effNet_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'Efficient Net v2, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
 
-loss.clear()
+del loss
+
+#%%
+# Create Dataframe to plot losses/epoch
+losses_array = np.array([resNet_losses, mobileNet_losses, AlexNet_losses, denseNet_losses,
+                        ViT_losses, swin_losses, convnext_losses, maxvit_losses, effNet_losses])
+index_values = NUM_EPOCHS
+column_values = model
+
+loss_df = pd.DataFrame(data = losses_array,
+                       index=index_values,
+                       columns=column_values)
+print(loss_df)
