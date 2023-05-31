@@ -224,6 +224,20 @@ for epoch in range(NUM_EPOCHS):
     #if (epoch % 10 == 0):
     print(f'ResNet, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
 
+# test
+y_test = []
+y_test_hat = []
+for i, data in enumerate(testloader, 0):
+    inputs, y_test_temp = data
+    with torch.no_grad():
+        y_test_hat_temp = resNetModel(inputs).round()
+    
+    y_test.extend(y_test_temp.numpy())
+    y_test_hat.extend(y_test_hat_temp.numpy())
+
+ResNet_acc = accuracy_score(y_test, np.argmax(y_test_hat, axis=1))
+print(f'Accuracy: {ResNet_acc*100:.2f} % after {NUM_EPOCHS} epochs')
+
 del loss
 
 # train MobileNet
@@ -239,6 +253,19 @@ for epoch in range(NUM_EPOCHS):
     mobileNet_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'MobileNet, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
+
+y_test = []
+y_test_hat = []
+for i, data in enumerate(testloader, 0):
+    inputs, y_test_temp = data
+    with torch.no_grad():
+        y_test_hat_temp = resNetModel(inputs).round()
+    
+    y_test.extend(y_test_temp.numpy())
+    y_test_hat.extend(y_test_hat_temp.numpy())
+
+MobileNet_acc = accuracy_score(y_test, np.argmax(y_test_hat, axis=1))
+print(f'Accuracy: {MobileNet_acc*100:.2f} % after {NUM_EPOCHS} epochs')
 
 del loss
 
@@ -256,6 +283,19 @@ for epoch in range(NUM_EPOCHS):
     #if (epoch % 10 == 0):
     print(f'AlexNet, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
     
+y_test = []
+y_test_hat = []
+for i, data in enumerate(testloader, 0):
+    inputs, y_test_temp = data
+    with torch.no_grad():
+        y_test_hat_temp = resNetModel(inputs).round()
+    
+    y_test.extend(y_test_temp.numpy())
+    y_test_hat.extend(y_test_hat_temp.numpy())
+
+AlexNet_acc = accuracy_score(y_test, np.argmax(y_test_hat, axis=1))
+print(f'Accuracy: {AlexNet_acc*100:.2f} % after {NUM_EPOCHS} epochs')
+    
 del loss
 
 # train denseNet
@@ -271,6 +311,19 @@ for epoch in range(NUM_EPOCHS):
     denseNet_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'DenseNet, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
+
+y_test = []
+y_test_hat = []
+for i, data in enumerate(testloader, 0):
+    inputs, y_test_temp = data
+    with torch.no_grad():
+        y_test_hat_temp = resNetModel(inputs).round()
+    
+    y_test.extend(y_test_temp.numpy())
+    y_test_hat.extend(y_test_hat_temp.numpy())
+
+denseNet_acc = accuracy_score(y_test, np.argmax(y_test_hat, axis=1))
+print(f'Accuracy: {denseNet_acc*100:.2f} % after {NUM_EPOCHS} epochs')
 
 del loss
 
@@ -288,6 +341,19 @@ for epoch in range(NUM_EPOCHS):
     #if (epoch % 10 == 0):
     print(f'ViT, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
 
+y_test = []
+y_test_hat = []
+for i, data in enumerate(testloader, 0):
+    inputs, y_test_temp = data
+    with torch.no_grad():
+        y_test_hat_temp = resNetModel(inputs).round()
+    
+    y_test.extend(y_test_temp.numpy())
+    y_test_hat.extend(y_test_hat_temp.numpy())
+
+ViT_acc = accuracy_score(y_test, np.argmax(y_test_hat, axis=1))
+print(f'Accuracy: {ViT_acc*100:.2f} % after {NUM_EPOCHS} epochs')
+
 del loss
 
 # train swin
@@ -303,6 +369,19 @@ for epoch in range(NUM_EPOCHS):
     swin_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'Swin, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
+
+y_test = []
+y_test_hat = []
+for i, data in enumerate(testloader, 0):
+    inputs, y_test_temp = data
+    with torch.no_grad():
+        y_test_hat_temp = resNetModel(inputs).round()
+    
+    y_test.extend(y_test_temp.numpy())
+    y_test_hat.extend(y_test_hat_temp.numpy())
+
+swin_acc = accuracy_score(y_test, np.argmax(y_test_hat, axis=1))
+print(f'Accuracy: {swin_acc*100:.2f} % after {NUM_EPOCHS} epochs')
 
 del loss
 
@@ -320,6 +399,19 @@ for epoch in range(NUM_EPOCHS):
     #if (epoch % 10 == 0):
     print(f'ConvNeXt, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
 
+y_test = []
+y_test_hat = []
+for i, data in enumerate(testloader, 0):
+    inputs, y_test_temp = data
+    with torch.no_grad():
+        y_test_hat_temp = resNetModel(inputs).round()
+    
+    y_test.extend(y_test_temp.numpy())
+    y_test_hat.extend(y_test_hat_temp.numpy())
+
+convnext_acc = accuracy_score(y_test, np.argmax(y_test_hat, axis=1))
+print(f'Accuracy: {convnext_acc*100:.2f} % after {NUM_EPOCHS} epochs')
+
 del loss
 
 # train maxvit
@@ -336,6 +428,19 @@ for epoch in range(NUM_EPOCHS):
     #if (epoch % 10 == 0):
     print(f'MaxVIT, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
 
+y_test = []
+y_test_hat = []
+for i, data in enumerate(testloader, 0):
+    inputs, y_test_temp = data
+    with torch.no_grad():
+        y_test_hat_temp = resNetModel(inputs).round()
+    
+    y_test.extend(y_test_temp.numpy())
+    y_test_hat.extend(y_test_hat_temp.numpy())
+
+maxvit_acc = accuracy_score(y_test, np.argmax(y_test_hat, axis=1))
+print(f'Accuracy: {maxvit_acc*100:.2f} % after {NUM_EPOCHS} epochs')
+
 del loss
 
 # train effnet
@@ -351,6 +456,19 @@ for epoch in range(NUM_EPOCHS):
     effNet_losses.append(float(loss.data.detach().numpy()))
     #if (epoch % 10 == 0):
     print(f'Efficient Net v2, Epoch {epoch}/{NUM_EPOCHS}, Loss: {loss.item():.12f}')
+
+y_test = []
+y_test_hat = []
+for i, data in enumerate(testloader, 0):
+    inputs, y_test_temp = data
+    with torch.no_grad():
+        y_test_hat_temp = resNetModel(inputs).round()
+    
+    y_test.extend(y_test_temp.numpy())
+    y_test_hat.extend(y_test_hat_temp.numpy())
+
+effNet_acc = accuracy_score(y_test, np.argmax(y_test_hat, axis=1))
+print(f'Accuracy: {effNet_acc*100:.2f} % after {NUM_EPOCHS} epochs')
 
 del loss
 
