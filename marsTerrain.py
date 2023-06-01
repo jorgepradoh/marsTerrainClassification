@@ -116,7 +116,6 @@ for allmodels in model:
 
 resNetModel.fc = nn.Sequential(OrderedDict([ 
     ('Linear',nn.Linear(2048,NUM_CLASSES, bias=True)),
-    #('Output',nn.LogSoftmax()) 
 ])) 
 
 mobileNet.classifier[1] = nn.Sequential(OrderedDict([
@@ -129,17 +128,14 @@ AlexNet.classifier[6] = nn.Sequential(OrderedDict([
 
 denseNetModel.classifier = nn.Sequential(OrderedDict([
     ('Linear', nn.Linear(1024, NUM_CLASSES, bias=True))
-    #('Output',nn.LogSoftmax(dim=NUM_CLASSES))
 ]))
 
 ViTmodel.heads = nn.Sequential(OrderedDict([
     ('Linear', nn.Linear(768, NUM_CLASSES, bias=True))
-    #('Output',nn.LogSoftmax(dim=NUM_CLASSES))
 ]))
 
 swinModel.head = nn.Sequential(OrderedDict([
     ('Linear', nn.Linear(768, NUM_CLASSES, bias=True))
-    #('Output',nn.LogSoftmax(dim=NUM_CLASSES))
 ]))
 
 convnext.classifier[2] = nn.Sequential(OrderedDict([
@@ -208,7 +204,7 @@ maxvit.train()
 effNet.train()
 
 #%% Train models
-NUM_EPOCHS = 20
+NUM_EPOCHS = 100
 
 # train resnet
 for epoch in range(NUM_EPOCHS):
