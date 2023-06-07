@@ -19,6 +19,10 @@ from sklearn.metrics import confusion_matrix
 import pandas as pd
 
 #%% Setup Data variables
+# setting device on GPU if available, else CPU
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print('Using device:', device)
+print()
 DatasetFolder = '/home/lpa3/Escritorio/prado/mars_terrain'
 TrainData = DatasetFolder + '/train'
 TestData = DatasetFolder + '/test'
@@ -154,15 +158,15 @@ effNet.classifier[1] = nn.Sequential(OrderedDict([
 # Learning rate
 lr = 0.001
 
-opt1 = optim.Adam(resNetModel.fc.parameters(), lr=lr)
-opt2 = optim.Adam(mobileNet.classifier[1].parameters(), lr=lr)
-opt3 = optim.Adam(AlexNet.classifier[6].parameters(), lr=lr)
-opt4 = optim.Adam(denseNetModel.classifier.parameters(), lr=lr)
-opt5 = optim.Adam(ViTmodel.heads.parameters(), lr=lr)
-opt6 = optim.Adam(swinModel.head.parameters(), lr=lr)
-opt7 = optim.Adam(convnext.classifier[2].parameters(), lr=lr)
-opt8 = optim.Adam(maxvit.classifier[5].parameters(), lr=lr)
-opt9 = optim.Adam(effNet.classifier[1].parameters(), lr=lr)
+opt1 = optim.AdamW(resNetModel.fc.parameters(), lr=lr)
+opt2 = optim.AdamW(mobileNet.classifier[1].parameters(), lr=lr)
+opt3 = optim.AdamW(AlexNet.classifier[6].parameters(), lr=lr)
+opt4 = optim.AdamW(denseNetModel.classifier.parameters(), lr=lr)
+opt5 = optim.AdamW(ViTmodel.heads.parameters(), lr=lr)
+opt6 = optim.AdamW(swinModel.head.parameters(), lr=lr)
+opt7 = optim.AdamW(convnext.classifier[2].parameters(), lr=lr)
+opt8 = optim.AdamW(maxvit.classifier[5].parameters(), lr=lr)
+opt9 = optim.AdamW(effNet.classifier[1].parameters(), lr=lr)
 
 loss_function = nn.CrossEntropyLoss()
 
@@ -213,8 +217,7 @@ maxvit.train()
 effNet.train()
 
 #%% Train models
-#torch.cuda.get_device_name(torch.cuda.current_device())
-NUM_EPOCHS = 20
+NUM_EPOCHS = 200
 
 # train resnet
 for epoch in range(NUM_EPOCHS):
@@ -487,13 +490,79 @@ for epoch in range(NUM_EPOCHS):
 del loss
 
 #%%
-# Create Dataframe to plot losses/epoch
-losses_array = np.array([resNet_losses, mobileNet_losses, AlexNet_losses, denseNet_losses,
-                        ViT_losses, swin_losses, convnext_losses, maxvit_losses, effNet_losses])
-index_values = NUM_EPOCHS
-column_values = model
+fig, (ax1, ax2) = plt.subplots(1,2, figsize=(25,8))
+#plt.subplot(1,2,1)
+plt.title("Convolutional model accuracy ")
+plt.ylabel("Accuracy %")
+plt.xlabel("Num. of Epochs")
+xplot = range(NUM_EPOCHS)
+ax1.plot(xplot[::2], ResNet_acc[::2], 'r', label='ResNet')
+ax1.plot(xplot[::2], MobileNet_acc[::2], 'g', label='MobileNet')
+ax1.plot(xplot[::2], AlexNet_acc[::2], 'b', label='AlexNet')
+ax1.plot(xplot[::2], denseNet_acc[::2], 'y', label='DenseNet')
+ax1.legend(loc="upper left")
+ax1.grid()
 
-loss_df = pd.DataFrame(data = losses_array,
-                       index=index_values,
-                       columns=column_values)
-print(loss_df)
+#plt.subplot(1,2,2)
+plt.title("Transformer models accuracy ")
+plt.ylabel("Accuracy %")
+plt.xlabel("Num. of Epochs")
+ax2.plot(xplot[::2], ViT_acc[::2], 'r', label='ViT')
+ax2.plot(xplot[::2], swin_acc[::2], 'g', label='Swin')
+ax2.plot(xplot[::2], convnext_acc[::2], 'b', label='ConvNext')
+ax2.plot(xplot[::2], maxvit_acc[::2], 'y', label='MaxViT')
+ax2.plot(xplot[::2], effNet_acc[::2], 'c', label='EfficientNet')
+ax2.legend(loc="upper left")
+ax2.grid()
+
+#%%
+fig, (ax1, ax2) = plt.subplots(1,2, figsize=(20,8))
+#plt.subplot(1,2,1)
+plt.title("Convolutional model loss")
+plt.ylabel("Loss")
+plt.xlabel("Num. of Epochs")
+xplot = range(NUM_EPOCHS)
+ax1.plot(xplot[::2], resNet_losses[::2], 'r', label='ResNet')
+ax1.plot(xplot[::2], mobileNet_losses[::2], 'g', label='MobileNet')
+ax1.plot(xplot[::2], AlexNet_losses[::2], 'b', label='AlexNet')
+ax1.plot(xplot[::2], denseNet_losses[::2], 'y', label='DenseNet')
+ax1.legend(loc="upper left")
+ax1.grid()
+
+#plt.subplot(1,2,2)
+plt.title("Transformer models loss")
+plt.ylabel("Loss")
+plt.xlabel("Num. of Epochs")
+ax2.plot(xplot[::5], ViT_losses[::5], 'r', label='ViT')
+ax2.plot(xplot[::5], swin_losses[::5], 'g', label='Swin')
+ax2.plot(xplot[::5], convnext_losses[::5], 'b', label='ConvNext')
+ax2.plot(xplot[::5], maxvit_losses[::5], 'y', label='MaxViT')
+ax2.plot(xplot[::5], effNet_losses[::5], 'c', label='EfficientNet')
+ax2.legend(loc="upper left")
+ax2.grid()
+
+#%%
+from numpy import save
+
+save('ResNet_Acc_200_epoch.npy', ResNet_acc)
+save('MobileNet_Acc_200_epoch.npy', MobileNet_acc)
+save('AlexNet_Acc_200_epoch.npy', AlexNet_acc)
+save('denseNet_Acc_200_epoch.npy', denseNet_acc)
+save('ViT_Acc_200_epoch.npy', ViT_acc)
+save('swin_Acc_200_epoch.npy', swin_acc)
+save('convnext_Acc_200_epoch.npy', convnext_acc)
+save('maxvit_Acc_200_epoch.npy', maxvit_acc)
+save('effNet_Acc_200_epoch.npy', effNet_acc)
+
+save('ResNet_loss_200_epoch.npy', resNet_losses)
+save('MobileNet_loss_200_epoch.npy', mobileNet_losses)
+save('AlexNet_loss_200_epoch.npy', AlexNet_losses)
+save('denseNet_loss_200_epoch.npy', denseNet_losses)
+save('ViT_loss_200_epoch.npy', ViT_losses)
+save('swin_loss_200_epoch.npy', swin_losses)
+save('convnext_loss_200_epoch.npy', convnext_losses)
+save('maxvit_loss_200_epoch.npy', maxvit_losses)
+save('effNet_loss_200_epoch.npy', effNet_losses)
+
+
+#%%
