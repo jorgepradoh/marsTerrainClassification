@@ -1,5 +1,5 @@
-# Python script using PyTorch to perform Multi-Class Classification using different networks
-# to test their performance on martian terrain. 
+# Python script using PyTorch to perform Multi-Class Classification using transfer learning
+# in different networks to test their performance on martian terrain. 
 # Jorge Prado, 2023
 
 #%% Import Packages
