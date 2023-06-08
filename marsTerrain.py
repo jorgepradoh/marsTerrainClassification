@@ -489,7 +489,7 @@ for epoch in range(NUM_EPOCHS):
 
 del loss
 
-#%%
+#%% Plot accuracy and loss evolution over epochs for all models
 fig, (ax1, ax2) = plt.subplots(1,2, figsize=(25,8))
 #plt.subplot(1,2,1)
 plt.title("Convolutional model accuracy ")
@@ -541,7 +541,7 @@ ax2.plot(xplot[::5], effNet_losses[::5], 'c', label='EfficientNet')
 ax2.legend(loc="upper left")
 ax2.grid()
 
-#%%
+#%% save accuracies and losses for analysis further on
 from numpy import save
 
 save('ResNet_Acc_200_epoch.npy', ResNet_acc)
@@ -566,3 +566,22 @@ save('effNet_loss_200_epoch.npy', effNet_losses)
 
 
 #%%
+#%% Confusion Matrix
+y_test = []
+y_test_hat = []
+
+# iterate over test data
+for inputs, labels in testloader:
+        output = maxvit(inputs) # Feed Network, change it for whatever model's confusion matrix you want
+        output = (torch.max(torch.exp(output), 1)[1]).numpy()
+        y_test_hat.extend(output) # Save Prediction
+        labels = labels.data.numpy()
+        y_test.extend(labels) # Save Truth
+
+# Build confusion matrix
+cf_matrix = confusion_matrix(y_test, y_test_hat)
+df_cm = pd.DataFrame(cf_matrix / np.sum(cf_matrix, axis=1)[:, None], index = [i for i in CLASSES],
+                     columns = [i for i in CLASSES])
+plt.figure(figsize = (12,7))
+sns.heatmap(df_cm, annot=True)
+plt.savefig('output.png')
