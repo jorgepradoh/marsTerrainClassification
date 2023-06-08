@@ -152,15 +152,16 @@ effNet.classifier[1] = nn.Sequential(OrderedDict([
 # Learning rate
 lr = 0.001
 
-opt1 = optim.AdamW(resNetModel.fc.parameters(), lr=lr)
-opt2 = optim.AdamW(mobileNet.classifier[1].parameters(), lr=lr)
-opt3 = optim.AdamW(AlexNet.classifier[6].parameters(), lr=lr)
-opt4 = optim.AdamW(denseNetModel.classifier.parameters(), lr=lr)
-opt5 = optim.AdamW(ViTmodel.heads.parameters(), lr=lr)
-opt6 = optim.AdamW(swinModel.head.parameters(), lr=lr)
-opt7 = optim.AdamW(convnext.classifier[2].parameters(), lr=lr)
-opt8 = optim.AdamW(maxvit.classifier[5].parameters(), lr=lr)
-opt9 = optim.AdamW(effNet.classifier[1].parameters(), lr=lr)
+opt1 = optim.AdamW(resNetModel.parameters(), lr=lr)
+opt2 = optim.AdamW(mobileNet.parameters(), lr=lr)
+opt3 = optim.AdamW(AlexNet.parameters(), lr=lr)
+opt4 = optim.AdamW(denseNetModel.parameters(), lr=lr)
+opt5 = optim.AdamW(ViTmodel.parameters(), lr=lr)
+opt6 = optim.AdamW(swinModel.parameters(), lr=lr)
+opt7 = optim.AdamW(convnext.parameters(), lr=lr)
+opt8 = optim.AdamW(maxvit.parameters(), lr=lr)
+opt9 = optim.AdamW(effNet.parameters(), lr=lr)
+
 
 loss_function = nn.CrossEntropyLoss()
 
